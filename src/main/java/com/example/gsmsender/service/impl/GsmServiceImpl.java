@@ -4,6 +4,8 @@ import com.example.gsmsender.dto.GsmRequest;
 import com.example.gsmsender.service.GsmSenderService;
 import com.example.gsmsender.service.GsmService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -13,6 +15,7 @@ import java.util.Map;
 
 @Service
 public class GsmServiceImpl implements GsmService {
+    Logger logger = LoggerFactory.getLogger(GsmServiceImpl.class);
 
     private final Map<String, GsmSenderService<?>> gsmServices;
     private final ObjectMapper objectMapper;
@@ -34,10 +37,12 @@ public class GsmServiceImpl implements GsmService {
 
         Object gsmRequestObject = objectMapper.convertValue(gsmRequest.getGsmRequestObj(), targetClass);
 
+
         // Reflection
         try {
             Method method = gsmSenderService.getClass().getMethod("send", targetClass);
             method.invoke(gsmSenderService, targetClass.cast(gsmRequestObject));
+            logger.debug("GsmServiceImpl.send() is invoked");
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
