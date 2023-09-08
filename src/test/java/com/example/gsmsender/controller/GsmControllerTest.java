@@ -29,16 +29,6 @@ class GsmControllerTest {
     @MockBean
     private GsmService gsmService;
 
-//    private MockMvc mockMvc;
-//    private GsmService gsmService;
-//
-//
-//    @BeforeEach
-//    void setUp() {
-//        gsmService = Mockito.mock(GsmService.class);
-//        mockMvc = MockMvcBuilders.standaloneSetup(new GsmController(gsmService)).build();
-//    }
-
     @Test
     void givenValidRequest_whenSendIsCalled_thenResponseShouldBeSuccess() throws Exception {
         NetroGsm netroGsm = new NetroGsm();
@@ -52,7 +42,7 @@ class GsmControllerTest {
 
         doNothing().when(gsmService).send(gsmRequest);
 
-        mockMvc.perform(post("/api/send")
+        mockMvc.perform(post("/api/gsm/send")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(gsmRequestJson))
                 .andExpect(status().isOk());

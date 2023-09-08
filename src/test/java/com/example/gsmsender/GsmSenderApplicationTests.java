@@ -9,5 +9,4 @@ class GsmSenderApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }

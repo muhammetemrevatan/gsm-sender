@@ -1,3 +1,9 @@
 spring:
   profiles:
-    active: init
+    active: init # Set the active profile to init
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'prometheus,info,health' # Expose the prometheus endpoint
