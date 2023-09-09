@@ -12,13 +12,17 @@ GsmSenderApplication is a Spring Boot based REST API application. This project h
 
 3. **OOP Foundations**: The project is developed adhering to the principles of Object-Oriented Programming (OOP).
 
+4. **Java Reflection**: Manages the properties and functionalities of objects dynamically.
+
 ### Design Patterns
 
 1. **Factory Pattern**: Provides a modular and extensible code base.
 
 2. **Strategy Pattern**: Facilitates the flexible use of different algorithms within the application.
+   
 
-3. **Java Reflection**: Manages the properties and functionalities of objects dynamically.
+***The design patterns mentioned above, taking into consideration the principles of OOP and the reflection feature of the Java language, have been utilized to develop a solution for directing a request, which might come through three different DTOs, to the appropriate Java classes, by considering the solutions that these three features can offer.***
+
 
 ### Tools and Integrations
 
