@@ -1,3 +1,28 @@
+---
+# Project Basic Information
+title: "GSM Message Sender Service"
+description: "Advanced Spring Boot application for GSM message management using Factory and Strategy patterns, featuring comprehensive monitoring with Prometheus and Grafana"
+showcase: true
+order: 3
+
+# Technologies
+technologies:
+  - "Java 17"
+  - "Spring Boot"
+  - "Docker"
+  - "Prometheus"
+  - "Grafana"
+  - "Swagger"
+
+# Features
+features:
+  - "Factory & Strategy Pattern Implementation"
+  - "Docker Containerization"
+  - "Performance Monitoring"
+  - "Dynamic Message Routing"
+  - "API Documentation with Swagger"
+---
+
 # GsmSenderApplication
 
 GsmSenderApplication is a Spring Boot based REST API application. This project has been developed to establish a backend service utilized to manage and send GSM messages. Rooted in modern software development techniques and various design patterns, the project embodies a scalable and maintainable structure.
