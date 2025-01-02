@@ -3,7 +3,7 @@
 title: "GSM Message Sender Service"
 description: "Advanced Spring Boot application for GSM message management using Factory and Strategy patterns, featuring comprehensive monitoring with Prometheus and Grafana"
 showcase: true
-order: 3
+order: 4
 
 # Technologies
 technologies:
