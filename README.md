@@ -1,98 +1,101 @@
----
-# Project Basic Information
-title: "GSM Message Sender Service"
-description: "Advanced Spring Boot application for GSM message management using Factory and Strategy patterns, featuring comprehensive monitoring with Prometheus and Grafana"
-showcase: true
-order: 4
+# GSM Message Sender Service
 
-# Technologies
-technologies:
-  - "Java 17"
-  - "Spring Boot"
-  - "Docker"
-  - "Prometheus"
-  - "Grafana"
-  - "Swagger"
+A Spring Boot REST API that routes message requests to provider-specific handlers using a typed request model and a strategy-style service map.
 
-# Features
-features:
-  - "Factory & Strategy Pattern Implementation"
-  - "Docker Containerization"
-  - "Performance Monitoring"
-  - "Dynamic Message Routing"
-  - "API Documentation with Swagger"
----
-
-# GsmSenderApplication
-
-GsmSenderApplication is a Spring Boot based REST API application. This project has been developed to establish a backend service utilized to manage and send GSM messages. Rooted in modern software development techniques and various design patterns, the project embodies a scalable and maintainable structure.
+> **Current behavior:** this is a routing and API-structure demo. The `NETRO`, `LIGHT`, and `LOGI` handlers currently print request fields to the application console; they do not connect to a GSM/SMS provider or send messages. Do not send real or sensitive recipient data to this demo.
 
 ## Features
 
-### Core Technologies and Principles
+- One endpoint accepts requests for three message formats: `NETRO`, `LIGHT`, and `LOGI`
+- A dedicated handler is selected for each request type
+- OpenAPI documentation with Swagger UI
+- Health and Prometheus metrics endpoints through Spring Boot Actuator
+- Docker Compose setup for the API, Prometheus, and Grafana
 
-1. **Java 17**: The project is developed using the current and efficient version of Java 17.
+## Technology
 
-2. **Spring Boot**: Facilitates the development of modern Spring-based applications swiftly and easily.
-
-3. **OOP Foundations**: The project is developed adhering to the principles of Object-Oriented Programming (OOP).
-
-4. **Java Reflection**: Manages the properties and functionalities of objects dynamically.
-
-### Design Patterns
-
-1. **Factory Pattern**: Provides a modular and extensible code base.
-
-2. **Strategy Pattern**: Facilitates the flexible use of different algorithms within the application.
-   
-
-***The design patterns mentioned above, taking into consideration the principles of OOP and the reflection feature of the Java language, have been utilized to develop a solution for directing a request, which might come through three different DTOs, to the appropriate Java classes, by considering the solutions that these three features can offer.***
-
-
-### Tools and Integrations
-
-1. **Swagger**: A user-friendly API documentation tool that eases the use and testing of the API.
-
-    - Swagger UI: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
-
-2. **Docker & Docker Compose**: Utilized for containerizing the application and facilitating easy management.
-
-3. **Actuator**: Allows the monitoring of the application's health status and other metrics.
-
-4. **Prometheus & Grafana**: Assist in observing and analyzing the performance and other metrics of the application.
-
-5. **Grafana**: An open-source platform for monitoring and observability that integrates with Prometheus to offer comprehensive insights through data visualization and dashboards.
-
-6. **Logback**: A robust and flexible logging solution.
-
-## Installation and Usage
-
-### Prerequisites
-
-- Maven
 - Java 17
 - Spring Boot 2.7.15
+- Maven
+- Spring Web and Jackson
+- Spring Boot Actuator and Micrometer Prometheus registry
+- springdoc OpenAPI
+- Docker Compose, Prometheus, and Grafana
 
-### Running Locally
+## Run locally
 
-1. Clone the project to your local machine.
-   ```bash
-   git clone https://github.com/muhammetemrevatan/gsm-sender.git
-    ```
-2. Navigate to the project directory and start the application with Maven.
-    ```bash
-    cd gsm-sender
-    mvn spring-boot:run
-    ```
-3. Once the application has started, you can open the Swagger UI to utilize the API documentation and testing tools.
+Prerequisites: JDK 17 and Maven. Docker is only needed for the monitoring stack.
 
-### Running with Docker
-1. Install and initiate Docker and Docker Compose.
-2. Navigate to the project directory and start the application with Docker Compose.
-    ```bash
-    cd gsm-sender
-    cd src
-    cd docker
-    docker-compose up -d
-    ```
-3. Once the application has started, you can open the Swagger UI to utilize the API documentation and testing tools.
+From the repository root:
+
+```bash
+mvn test
+mvn spring-boot:run
+```
+
+The API listens on port `8080` by default.
+
+## Send a routing request
+
+`POST /api/gsm/send` accepts a `gsmRequestType` and a matching `gsmRequestObj`.
+
+```bash
+curl -X POST http://localhost:8080/api/gsm/send \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "gsmRequestType": "NETRO",
+    "gsmRequestObj": {
+      "to": "+15555550123",
+      "subject": "Example",
+      "message": "Test message"
+    }
+  }'
+```
+
+Supported request types and fields:
+
+| Type | Fields |
+| --- | --- |
+| `NETRO` | `to`, `message`, `subject` |
+| `LIGHT` | `to`, `message` |
+| `LOGI` | `to`, `message`, `cc`, `subject` |
+
+The controller currently returns an empty successful response when routing completes. The selected handler writes the received values to the application log/console; this does not confirm delivery to a recipient.
+
+## API and monitoring endpoints
+
+When the application is running locally:
+
+- Swagger UI: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+- OpenAPI JSON: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+- Health: [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
+- Prometheus metrics: [http://localhost:8080/actuator/prometheus](http://localhost:8080/actuator/prometheus)
+
+## Run with Docker Compose
+
+Build the application JAR first, then start the API and monitoring services:
+
+```bash
+mvn clean package
+docker compose -f src/docker/docker-compose.yml up --build -d
+```
+
+The Compose file publishes the API on `8080`, Prometheus on `9090`, and Grafana on `3000`. Use `docker compose -f src/docker/docker-compose.yml logs -f app` to follow the API logs, and `docker compose -f src/docker/docker-compose.yml down` to stop the stack.
+
+The included monitoring configuration is intended for local development. The Grafana admin password is currently configured in the Compose file; change it before exposing Grafana beyond a trusted local environment. Prometheus targets `host.docker.internal:8080`, which may need to be changed to the Compose service name (`app:8080`) on Linux Docker setups.
+
+## Project structure
+
+```text
+src/main/java/.../controller/   REST API endpoint
+src/main/java/.../dto/          Request and provider payload models
+src/main/java/.../enums/        Supported request types
+src/main/java/.../service/      Routing contract and provider handlers
+src/main/resources/             Spring and logging configuration
+src/docker/                     Compose, Prometheus, and alert configuration
+src/test/                       Controller and application tests
+```
+
+## Production considerations
+
+Before connecting a real provider, implement and test its transport/authentication in the corresponding handler. Add authentication, request validation, rate limiting, delivery/error reporting, and safe handling of recipient data before exposing the endpoint publicly. Avoid logging message contents or phone numbers in production.
